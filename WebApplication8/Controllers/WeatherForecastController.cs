@@ -26,14 +26,7 @@ namespace WebApplication8.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index).ToBinary(),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return posts;
         }
 
         static List<WeatherForecast> posts = new List<WeatherForecast>();
@@ -66,6 +59,16 @@ namespace WebApplication8.Controllers
             var send = posts.FirstOrDefault(f => f.ID == id);
 
             return send ?? new WeatherForecast();
+        }
+
+        [HttpDelete]
+        public bool Delete(int id)
+        {
+            var delete = posts.FirstOrDefault(f => f.ID == id);
+            if (delete == null)
+                return false;
+            posts.Remove(delete);
+            return true;
         }
     }
 }
