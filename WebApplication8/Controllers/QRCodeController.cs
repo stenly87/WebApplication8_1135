@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication8.DB;
 using WebApplication8.Models;
 
 namespace WebApplication8.Controllers
@@ -12,43 +13,47 @@ namespace WebApplication8.Controllers
     [ApiController]
     public class QRCodeController : ControllerBase
     {
-        static Dictionary<int, QRCode> codes = new Dictionary<int, QRCode>();
-        static int autoincrement = 1;
+        private readonly QRCodeDbContext db;
+
+        public QRCodeController(QRCodeDbContext db)
+        {
+            this.db = db;
+        }
 
         [HttpGet]
         public IEnumerable<QRCode> Get()
         {
-            return codes.Values;
+            return db.codes;
         }
 
         [HttpPost]
         public QRCode Post(QRCode code)
         {
-            code.ID = autoincrement++;
-            codes.Add(code.ID, code);
+            db.codes.Add(code);
+            db.SaveChanges();
             return code;
         }
 
         [HttpPut]
         public bool Put(QRCode code)
         {
-            if (codes.ContainsKey(code.ID))
-            {
-                codes[code.ID] = code;
-                return true;
-            }
-            return false;
+            var update = db.codes.FirstOrDefault(s => s.ID == code.ID);
+            if (update == null)
+                return false;
+            db.Entry(update).CurrentValues.SetValues(code);
+            db.SaveChanges();
+            return true;
         }
 
         [HttpDelete]
         public bool Delete(QRCode code)
         {
-            if (codes.ContainsKey(code.ID))
-            {
-                codes.Remove(code.ID);
-                return true;
-            }
-            return false;
+            var delete = db.codes.FirstOrDefault(s => s.ID == code.ID);
+            if (delete == null)
+                return false;
+            db.codes.Remove(delete);
+            db.SaveChanges();
+            return true;
         }
     }
 }

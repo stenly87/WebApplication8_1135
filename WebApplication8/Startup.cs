@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication8.DB;
 
 namespace WebApplication8
 {
@@ -25,7 +26,7 @@ namespace WebApplication8
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<QRCodeDbContext>(ServiceLifetime.Singleton);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
